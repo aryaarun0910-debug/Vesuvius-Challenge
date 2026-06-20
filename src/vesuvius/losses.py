@@ -37,7 +37,7 @@ Bnd loss: Kervadec et al. (2019) https://arxiv.org/abs/1905.07852
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from typing import Literal
 
 import torch
@@ -606,9 +606,8 @@ class PhaseGatedLoss(nn.Module):
     def active_components(self, phase: Phase) -> list[str]:
         """Return the names of components with non-zero weight in this phase."""
         return [
-            name for name in _PHASE_INDEX.__class__.__mro__[0].__dict__
-            if isinstance(getattr(PhaseWeights, name, None), tuple)
-            and self._w(name, phase) > 0.0
+            f.name for f in fields(self.weights)
+            if self._w(f.name, phase) > 0.0
         ]
 
     def __repr__(self) -> str:
