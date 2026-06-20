@@ -159,7 +159,7 @@ Large competition assets, model checkpoints, and generated datasets are intentio
 - `.pt`, `.pth`, `.ckpt`, `.onnx`, and similar model weights
 - local cache folders and generated notebook checkpoints
 
-This keeps the repository professional, cloneable, and safe for LinkedIn/GitHub presentation. See [docs/DATA_AND_WEIGHTS.md](docs/DATA_AND_WEIGHTS.md) for reproduction notes.
+This keeps the repository lightweight and cloneable without the multi-gigabyte CT data. See [docs/DATA_AND_WEIGHTS.md](docs/DATA_AND_WEIGHTS.md) for reproduction notes.
 
 ## Kaggle Challenge
 
