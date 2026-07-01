@@ -6,13 +6,15 @@
 ![Kaggle](https://img.shields.io/badge/Kaggle-Vesuvius%20Challenge-20BEFF)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-Deep learning research repository for the Kaggle **Vesuvius Challenge - Surface Detection** competition.
+Deep learning research repository built for the Kaggle **Vesuvius Challenge - Surface Detection** competition.
 
-This project explores 3D surface segmentation for scroll-volume CT data, with an emphasis on topology-aware validation, specialist model ensembles, and robust inference under Kaggle runtime constraints.
+**This is open, non-submitted research, not a scored competition entry.** We worked the problem as open competitors but never made an official platform submission — we didn't have the GPU compute to run the full pipeline at Kaggle scale. Every score in this repo (see [Current System](#current-system) and [`docs/PAPER_DRAFT.md`](docs/PAPER_DRAFT.md)) is a **local proxy score on a held-out validation split**, not an official leaderboard result, and should be read as relative evidence between our own configurations rather than a competition placement.
+
+This project explores 3D surface segmentation for scroll-volume CT data, with an emphasis on topology-aware validation and specialist model ensembles, designed to run within the runtime constraints Kaggle's platform would impose if we had submitted.
 
 ## Research Focus
 
-The core hypothesis is that strong leaderboard performance in surface detection is not only a better U-Net. The system has to reduce topology failures:
+The core hypothesis is that strong surface-detection performance is not only a better U-Net. The system has to reduce topology failures:
 
 - **Surface quality**: maximize Surface Dice around thin sheet boundaries.
 - **Merge control**: prevent bridges between nearby surfaces.
@@ -164,6 +166,8 @@ This keeps the repository lightweight and cloneable without the multi-gigabyte C
 ## Kaggle Challenge
 
 Competition page: https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection
+
+We built this against the competition's problem and data format but did not submit — no access to the GPU compute a full-scale submission run requires. All results here are local, proxy-scored, and unranked.
 
 ## Quick Start
 
