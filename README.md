@@ -188,5 +188,5 @@ The training notebooks run on Kaggle GPU environments. Everything else (tests, a
 
 ## Contributors
 
-A two-person project (Arya Arun and Chris Legge), covering model architecture, the phase-gated loss design, topology-aware post-processing, the inference pipeline, and the research/analysis tooling. See the commit history for the detailed split.
+A two-person project (Arya Arun and Chris Legge), covering model architecture, the phase-gated loss design, topology-aware post-processing, the inference pipeline and the research/analysis tooling.
 
