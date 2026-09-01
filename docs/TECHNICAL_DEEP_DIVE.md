@@ -1,6 +1,6 @@
 # Technical Deep Dive
 
-## Why Dice Alone Is Not Enough
+## Why Dice alone is not enough
 
 For thin 3D surfaces, mean segmentation overlap can hide catastrophic structural errors. A prediction can have reasonable local overlap while still creating a bridge between two nearby surfaces or splitting one continuous sheet into pieces.
 
@@ -12,7 +12,7 @@ That is why this project emphasizes topology-aware behavior:
 - threshold robustness
 - surface-distance quality
 
-## Specialist Ensemble Rationale
+## Specialist ensemble rationale
 
 The ensemble is not just multiple seeds of the same idea. Each member has a role:
 
@@ -22,7 +22,7 @@ The ensemble is not just multiple seeds of the same idea. Each member has a role
 
 This is useful because ensemble value comes from complementary errors, not just averaging similar predictions.
 
-## Hysteresis Thresholding
+## Hysteresis thresholding
 
 Simple thresholding treats every voxel independently. Hysteresis thresholding uses two thresholds:
 
@@ -31,7 +31,7 @@ Simple thresholding treats every voxel independently. Hysteresis thresholding us
 
 Weak regions are kept only when connected to confident seeds. This reduces isolated noise while preserving plausible thin structures.
 
-## Runtime Degradation
+## Runtime degradation
 
 Kaggle notebooks have strict runtime and memory limits. The production notebook therefore includes a degradation ladder:
 

@@ -8,13 +8,13 @@
 
 Deep learning research repository built for the Kaggle **Vesuvius Challenge - Surface Detection** competition.
 
-**This is open, non-submitted research, not a scored competition entry.** We worked the problem as open competitors but never made an official platform submission — we didn't have the GPU compute to run the full pipeline at Kaggle scale. Every score in this repo (see [Current System](#current-system) and [`docs/PAPER_DRAFT.md`](docs/PAPER_DRAFT.md)) is a **local proxy score on a held-out validation split**, not an official leaderboard result, and should be read as relative evidence between our own configurations rather than a competition placement.
+**This is open, non-submitted research, not a scored competition entry.** We worked the problem as open competitors but never made an official platform submission: we didn't have the GPU compute to run the full pipeline at Kaggle scale. Every score in this repo (see [Current System](#current-system) and [`docs/PAPER_DRAFT.md`](docs/PAPER_DRAFT.md)) is a **local proxy score on a held-out validation split**, not an official leaderboard result, and should be read as relative evidence between our own configurations rather than a competition placement.
 
 This project explores 3D surface segmentation for scroll-volume CT data, with an emphasis on topology-aware validation and specialist model ensembles, designed to run within the runtime constraints Kaggle's platform would impose if we had submitted.
 
-## Research Focus
+## Research focus
 
-The core hypothesis is that strong surface-detection performance is not only a better U-Net. The system has to reduce topology failures:
+The core hypothesis is that strong surface-detection performance takes more than a better U-Net. The system also has to reduce topology failures:
 
 - **Surface quality**: maximize Surface Dice around thin sheet boundaries.
 - **Merge control**: prevent bridges between nearby surfaces.
@@ -22,7 +22,7 @@ The core hypothesis is that strong surface-detection performance is not only a b
 - **Threshold stability**: prefer models whose predictions stay stable under small threshold changes.
 - **Runtime resilience**: degrade gracefully when inference time is limited.
 
-## Repository Map
+## Repository map
 
 | Path | Purpose |
 |---|---|
@@ -48,7 +48,7 @@ The core hypothesis is that strong surface-detection performance is not only a b
 | [Performance Engineering](docs/PERFORMANCE_ENGINEERING.md) | GPU memory, patch scheduling, TTA cost, degradation ladder tradeoffs |
 | [Reproducibility](docs/REPRODUCIBILITY.md) | Data paths, environment, known sources of nondeterminism |
 
-## Current System
+## Current system
 
 The current project state uses a specialist ensemble design:
 
@@ -60,116 +60,116 @@ The current project state uses a specialist ensemble design:
 
 Inference uses temperature scaling, hysteresis thresholds, topology-aware post-processing, test-time augmentation, and a time-budget degradation ladder.
 
-## Training Evidence
+## Training evidence
 
-All figures below are generated from committed training history by `analysis/plot_training_curves.py` — no competition data or GPU required to reproduce them.
+All figures below are generated from committed training history by `analysis/plot_training_curves.py`: no competition data or GPU required to reproduce them.
 
-**Loss trajectories across all three specialists** — phase bands show early/mid/late gating. Dotted vertical line marks the best validation epoch per model.
+**Loss trajectories across all three specialists**: phase bands show early/mid/late gating. Dotted vertical line marks the best validation epoch per model.
 
 ![Loss trajectories](results/figures/fig1_loss_trajectories.png)
 
-**Phase-gated loss component activation** — shows which components (gap-negative, centreline Dice, topology guide) are inactive in early phase and progressively introduced in mid and late. Each specialist has a different activation pattern reflecting its role.
+**Phase-gated loss component activation**: shows which components (gap-negative, centreline Dice, topology guide) are inactive in early phase and progressively introduced in mid and late. Each specialist has a different activation pattern reflecting its role.
 
 ![Phase-gated components](results/figures/fig2_phase_gated_components.png)
 
-**Learning rate schedules** — cosine schedule with a non-trivial floor. Late-phase LR held above 3e-4 to keep surface polishing active.
+**Learning rate schedules**: cosine schedule with a non-trivial floor. Late-phase LR held above 3e-4 to keep surface polishing active.
 
 ![LR schedules](results/figures/fig3_lr_schedules.png)
 
-**Model comparison** — score decomposition (composite, SurfaceDice, VOI, TopoScore), training time, and patch size per specialist.
+**Model comparison**: score decomposition (composite, SurfaceDice, VOI, TopoScore), training time, and patch size per specialist.
 
 ![Model comparison](results/figures/fig4_model_comparison.png)
 
-## Topology Post-Processing
+## Topology post-processing
 
 The two structural failure modes the system targets, visualised on synthetic probability maps generated to match typical scroll CT characteristics. Figures produced by `analysis/plot_topology_postprocess.py`.
 
-**Bridge case (VOI_merge / Topo k1 failure)** — two topologically distinct surfaces connected by a thin low-confidence bridge. Naive thresholding at 0.50 merges them into one component. Hysteresis thresholding reduces the bridge; bridge-neck cutting via distance-transform thickness removes it.
+**Bridge case (VOI_merge / Topo k1 failure)**: two topologically distinct surfaces connected by a thin low-confidence bridge. Naive thresholding at 0.50 merges them into one component. Hysteresis thresholding reduces the bridge; bridge-neck cutting via distance-transform thickness removes it.
 
 ![Bridge case](results/figures/fig5_topology_bridge_case.png)
 
-**Split case (VOI_split / Topo k0 failure)** — a single continuous surface fragmented by a CT attenuation shadow. Naive thresholding produces two components where one should exist. Hysteresis recovers continuity by propagating from high-confidence seed regions.
+**Split case (VOI_split / Topo k0 failure)**: a single continuous surface fragmented by a CT attenuation shadow. Naive thresholding produces two components where one should exist. Hysteresis recovers continuity by propagating from high-confidence seed regions.
 
 ![Split case](results/figures/fig6_topology_split_case.png)
 
-**Full pipeline overview** — both failure modes through each processing stage, with connected-component counts annotated at each step.
+**Full pipeline overview**: both failure modes through each processing stage, with connected-component counts annotated at each step.
 
 ![Pipeline overview](results/figures/fig7_postprocess_pipeline.png)
 
-## Metric Sensitivity Analysis
+## Metric sensitivity analysis
 
-Three figures examining why the composite metric S = 0.30·T + 0.35·D_tau + 0.35·V cannot be reduced to Dice optimisation. Generated by `analysis/plot_score_sensitivity.py` using synthetic data — no competition data or GPU required.
+Three figures examining why the composite metric S = 0.30·T + 0.35·D_tau + 0.35·V cannot be reduced to Dice optimisation. Generated by `analysis/plot_score_sensitivity.py` using synthetic data: no competition data or GPU required.
 
-**Threshold sensitivity — S(t) curves** — how the composite score varies with binarisation threshold for three calibration regimes. A well-calibrated model maintains a wide plateau; an overconfident model collapses to a sharp spike. Temperature scaling (T=0.85) provides intermediate behaviour.
+**Threshold sensitivity: S(t) curves.** How the composite score varies with binarisation threshold for three calibration regimes. A well-calibrated model maintains a wide plateau; an overconfident model collapses to a sharp spike. Temperature scaling (T=0.85) provides intermediate behaviour.
 
 ![Threshold sensitivity](results/figures/fig8_threshold_sensitivity.png)
 
-**Bridge event curve** — composite score vs number of bridges inserted between two distinct surfaces. VOI and TopoScore respond discontinuously: a single bridge can drop S by 0.15+ while Dice barely moves. This is the core motivation for topology-aware post-processing.
+**Bridge event curve**: composite score vs number of bridges inserted between two distinct surfaces. VOI and TopoScore respond discontinuously: a single bridge can drop S by 0.15+ while Dice barely moves. This is the core motivation for topology-aware post-processing.
 
 ![Bridge event curve](results/figures/fig9_bridge_event_curve.png)
 
-**Dice vs composite scatter** — predictions with identical Dice coefficients can span a 0.2+ range of composite scores depending on topology error type. Bridge errors (red triangles) and fragmentation errors (blue squares) diverge substantially from the identity line.
+**Dice vs composite scatter**: predictions with identical Dice coefficients can span a 0.2+ range of composite scores depending on topology error type. Bridge errors (red triangles) and fragmentation errors (blue squares) diverge substantially from the identity line.
 
 ![Dice vs composite](results/figures/fig10_dice_vs_composite.png)
 
-## 3D Surface Visualisation
+## 3D surface visualisation
 
 Synthetic 3D CT scroll volumes showing the two failure modes (bridge, split) at every stage of the post-processing pipeline, from raw probability maps through to topologically corrected output. Generated by `analysis/plot_surface_3d.py`.
 
-**Orthogonal cross-sections** — three axis-aligned slices through the synthetic probability volume with GT surface boundaries overlaid. Mirrors the view used during model debugging on real scroll CT data.
+**Orthogonal cross-sections**: three axis-aligned slices through the synthetic probability volume with GT surface boundaries overlaid. Mirrors the view used during model debugging on real scroll CT data.
 
 ![Cross-sections](results/figures/fig11_cross_sections.png)
 
-**3D surface meshes** — marching-cubes extraction on GT, clean prediction, and bridge prediction. Component count annotated per mesh; the bridge case merges two topologically distinct surfaces into one component.
+**3D surface meshes**: marching-cubes extraction on GT, clean prediction, and bridge prediction. Component count annotated per mesh; the bridge case merges two topologically distinct surfaces into one component.
 
 ![Surface meshes](results/figures/fig12_surface_meshes.png)
 
-**Post-processing pipeline — 2D** — XY cross-section through a bridge case at four processing stages: GT, naive threshold (t=0.50), hysteresis thresholding [0.35, 0.65], and bridge-neck cutting. Connected-component count annotated at each stage.
+**Post-processing pipeline, 2D.** XY cross-section through a bridge case at four processing stages: GT, naive threshold (t=0.50), hysteresis thresholding [0.35, 0.65], and bridge-neck cutting. Connected-component count annotated at each stage.
 
 ![Post-processing pipeline 2D](results/figures/fig14_postprocess_pipeline_2d.png)
 
-**SurfaceDice tolerance map** — per-voxel false-colour overlay showing which predicted surface voxels fall within tau=2.0 of the GT surface (precision, green) and which do not (red). Mirrors how the metric is computed in `src/vesuvius/metrics.py`.
+**SurfaceDice tolerance map**: per-voxel false-colour overlay showing which predicted surface voxels fall within tau=2.0 of the GT surface (precision, green) and which do not (red). Mirrors how the metric is computed in `src/vesuvius/metrics.py`.
 
 ![SurfaceDice contribution](results/figures/fig15_surfdice_contribution.png)
 
-## Calibration Analysis
+## Calibration analysis
 
 Probability calibration determines whether threshold selection is principled or arbitrary. A miscalibrated model forces the user to search for the right threshold empirically; a well-calibrated model has a stable operating point near 0.5. The T=0.85 temperature scaling in the inference pipeline is motivated by this analysis. Generated by `analysis/plot_calibration.py`.
 
-**Reliability diagrams** — for each calibration regime, the fraction of positive voxels in each probability bin is plotted against the mean predicted probability. Perfect calibration lies on the diagonal. The shaded gap between curve and diagonal is integrated to form ECE; histogram bars show the density of predictions per bin.
+**Reliability diagrams**: for each calibration regime, the fraction of positive voxels in each probability bin is plotted against the mean predicted probability. Perfect calibration lies on the diagonal. The shaded gap between curve and diagonal is integrated to form ECE; histogram bars show the density of predictions per bin.
 
 ![Reliability diagrams](results/figures/fig16_reliability_diagrams.png)
 
-**ECE vs temperature T** — Expected Calibration Error swept over the temperature scaling parameter. The minimum identifies T* for each model; the pipeline value T=0.85 is marked for reference. The overconfident model requires stronger correction (T* further from 1.0).
+**ECE vs temperature T**: Expected Calibration Error swept over the temperature scaling parameter. The minimum identifies T* for each model; the pipeline value T=0.85 is marked for reference. The overconfident model requires stronger correction (T* further from 1.0).
 
 ![ECE vs temperature](results/figures/fig17_ece_vs_temperature.png)
 
-**Sharpness vs ECE scatter** — each point is a (sharpness, ECE) pair for a different (model sharpness, temperature) configuration. Overconfident models occupy the high-sharpness, high-ECE region. Temperature scaling moves points toward the well-calibrated region.
+**Sharpness vs ECE scatter**: each point is a (sharpness, ECE) pair for a different (model sharpness, temperature) configuration. Overconfident models occupy the high-sharpness, high-ECE region. Temperature scaling moves points toward the well-calibrated region.
 
 ![Sharpness vs ECE](results/figures/fig18_sharpness_vs_ece.png)
 
-**Calibration impact on composite score** — best achievable composite score S (over threshold grid) and ECE vs temperature T for both calibration regimes. Shows that the composite-score plateau is wider for the well-calibrated model and that T=0.85 is near-optimal for the overconfident model.
+**Calibration impact on composite score**: best achievable composite score S (over threshold grid) and ECE vs temperature T for both calibration regimes. Shows that the composite-score plateau is wider for the well-calibrated model and that T=0.85 is near-optimal for the overconfident model.
 
 ![Calibration vs composite](results/figures/fig19_calibration_vs_composite.png)
 
-## What Is Not Committed
+## What is not committed
 
 Large competition assets, model checkpoints, and generated datasets are intentionally excluded from Git:
 
 - Kaggle competition zip files
-- extracted CT volumes and label TIFFs
+- Extracted CT volumes and label TIFFs
 - `.pt`, `.pth`, `.ckpt`, `.onnx`, and similar model weights
-- local cache folders and generated notebook checkpoints
+- Local cache folders and generated notebook checkpoints
 
 This keeps the repository lightweight and cloneable without the multi-gigabyte CT data. See [docs/DATA_AND_WEIGHTS.md](docs/DATA_AND_WEIGHTS.md) for reproduction notes.
 
-## Kaggle Challenge
+## Kaggle challenge
 
 Competition page: https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection
 
-We built this against the competition's problem and data format but did not submit — no access to the GPU compute a full-scale submission run requires. All results here are local, proxy-scored, and unranked.
+We built this against the competition's problem and data format but did not submit: no access to the GPU compute a full-scale submission run requires. All results here are local, proxy-scored, and unranked.
 
-## Quick Start
+## Quick start
 
 ```bash
 python -m venv .venv
@@ -184,7 +184,7 @@ python analysis/plot_surface_3d.py          # regenerate 3D surface visualisatio
 python analysis/plot_calibration.py         # regenerate calibration analysis figures
 ```
 
-The training notebooks run on Kaggle GPU environments. Everything else — tests, analysis scripts, and figure generation — runs locally without competition data.
+The training notebooks run on Kaggle GPU environments. Everything else (tests, analysis scripts, and figure generation) runs locally without competition data.
 
 ## Contributors
 

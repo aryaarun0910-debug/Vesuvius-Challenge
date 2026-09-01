@@ -27,7 +27,7 @@ Kaggle notebooks expect paths similar to:
 /kaggle/input/vesuvius-trained-weights/
 ```
 
-## Determinism Notes
+## Determinism notes
 
 The metadata tracks:
 
@@ -41,7 +41,7 @@ The metadata tracks:
 
 Full GPU determinism is not guaranteed because CUDA kernels, Kaggle hardware, and notebook environments can vary.
 
-## Local Verification
+## Local verification
 
 The local tests validate repository-level behavior:
 

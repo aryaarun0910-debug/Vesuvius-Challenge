@@ -1,12 +1,12 @@
 # Model Card
 
-## Intended Use
+## Intended use
 
 This model family is intended for the Kaggle Vesuvius Challenge Surface Detection competition and related research exploration in 3D surface segmentation.
 
 It is not intended for medical diagnosis, safety-critical archaeological interpretation, or production use without independent validation.
 
-## Model Family
+## Model family
 
 | Model | Role | Seed | Fold | Patch Size | Best Validation Proxy |
 |---|---:|---:|---:|---:|---:|
@@ -14,7 +14,7 @@ It is not intended for medical diagnosis, safety-critical archaeological interpr
 | Model B | Anti-merge | 1337 | 1 | 160³ | 0.5110 |
 | Model C | Surface specialist | 2024 | 2 | 192³ | 0.4902 |
 
-## Training Characteristics
+## Training characteristics
 
 Common design choices:
 
@@ -25,7 +25,7 @@ Common design choices:
 - gradient clipping
 - exponential moving average for selected runs
 
-## Inference Characteristics
+## Inference characteristics
 
 The production inference path uses:
 

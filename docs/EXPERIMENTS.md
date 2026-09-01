@@ -9,7 +9,7 @@ This log summarizes the research decisions that made it into the portfolio versi
 | Model C | Surface specialist | Surface-focused training can improve boundary behavior | 192 x 192 x 192 patches, seed 2024, fold 2 | best proxy score 0.4902 | Keep as surface specialist |
 | Production inference | Runtime robustness | Inference should degrade gracefully under Kaggle limits | TTA, overlap control, model count reduction | six degradation levels verified | Keep |
 
-## What This Shows
+## What this shows
 
 The project was not treated as a single notebook experiment. It was treated as a system:
 
@@ -18,4 +18,4 @@ The project was not treated as a single notebook experiment. It was treated as a
 - validate with metadata and audit checks
 - keep only components that serve a clear role
 
-That workflow is important for production ML, quant research tooling, and high-performance engineering teams because it makes tradeoffs explicit.
+That workflow matters because it makes tradeoffs explicit instead of implicit.

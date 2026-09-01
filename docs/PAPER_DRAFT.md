@@ -1,6 +1,6 @@
 # Topology-Aware Surface Detection in Volumetric Scroll CT
 
-**Draft abstract — Vesuvius Challenge: Surface Detection**
+**Draft abstract for the Vesuvius Challenge: Surface Detection**
 
 ---
 
@@ -8,8 +8,8 @@
 
 Recovering readable text from carbonised Herculaneum scrolls requires detecting
 thin papyrus surfaces in micro-CT volumes where adjacent layers are separated by
-gaps of only a few voxels. Standard segmentation objectives — cross-entropy and
-volumetric Dice — are insensitive to the topological failure modes that dominate
+gaps of only a few voxels. Standard segmentation objectives (cross-entropy and
+volumetric Dice) are insensitive to the topological failure modes that dominate
 this setting: bridge errors that merge topologically distinct surfaces into a
 single connected component, and split errors that fragment a continuous surface
 into disconnected pieces. The competition scoring metric formalises this as a
@@ -21,8 +21,8 @@ continuity, relaxed via a phase-gated Lagrangian schedule that progressively
 activates topology-sensitive loss terms (gap-negative, centreline Dice,
 component regularisation) once the model has learned a stable surface
 representation in the early phase. A specialist ensemble of three 3D Residual
-U-Nets — a generalist, an anti-merge specialist, and a surface-boundary
-specialist — is combined with temperature-scaled probability outputs (T=0.85)
+U-Nets (a generalist, an anti-merge specialist, and a surface-boundary
+specialist) is combined with temperature-scaled probability outputs (T=0.85)
 and hysteresis thresholding to widen the operating plateau around the 0.50
 binarisation threshold. Calibration analysis shows that the overconfident
 baseline model has ECE=0.041 at T=1.0; temperature scaling reduces this to
@@ -43,8 +43,8 @@ image segmentation, topology errors (spurious handles, disconnected components)
 are uncommon because anatomical structures are compact and well-separated. In
 scroll CT, the opposite holds: two adjacent papyrus layers may be separated by a
 gap of 2–4 voxels across a 500-voxel field of view. A model that bridges this
-gap with a thin neck of foreground voxels achieves high Dice — the bridge is
-small relative to total surface area — but catastrophically changes the
+gap with a thin neck of foreground voxels achieves high Dice (the bridge is
+small relative to total surface area) but catastrophically changes the
 downstream text-unwrapping geometry. The same surface area that makes Dice
 insensitive to bridges makes it insensitive to splits: a 10-voxel gap in a
 70-voxel surface costs less than 15% of Dice but produces two components where
@@ -60,7 +60,7 @@ cares about, rather than a surrogate (Dice) that is nearly orthogonal to them.
 
 ---
 
-## 2  Problem Formulation
+## 2  Problem formulation
 
 Let f_θ: R^(D×H×W) → R^(D×H×W) be the model mapping a CT patch to per-voxel
 logits. The inference pipeline produces a binary mask via hysteresis thresholding
@@ -74,7 +74,7 @@ where b(·) denotes binarisation and bridges(·), splits(·) count topological
 errors. The constraints are hard in the target sense but soft in practice:
 they are incorporated as penalty terms in a Lagrangian relaxation, with the
 penalty weights (Lagrange multipliers) set implicitly by the phase-gated loss
-schedule — near-zero in early training (feasibility-first), ramped to their
+schedule: near-zero in early training (feasibility-first), ramped to their
 operating values in the late phase.
 
 This framing distinguishes the approach from pure metric learning: the
@@ -91,8 +91,8 @@ proxies for the bridge and split constraints respectively.
 Each specialist is a 3D Residual U-Net with instance normalisation (see
 `src/vesuvius/model.py`). Instance norm rather than batch norm is required
 because patch-based training with batch size 1–2 makes batch statistics
-unstable. Residual connections allow topology-sensitive gradient signals —
-which are spatially sparse — to back-propagate to the encoder without
+unstable. Residual connections allow topology-sensitive gradient signals
+(which are spatially sparse) to back-propagate to the encoder without
 vanishing. The three specialists share the same architecture but differ in
 patch size and base feature count (see Table 1 in `README.md`).
 
@@ -134,9 +134,9 @@ final threshold, which preserves calibration better than majority voting.
 | Model B (anti-merge)         | 0.5110 | 0.61 | 0.68 |
 | Model C (surface specialist) | 0.4902 | 0.72 | 0.59 |
 | Ensemble A+B+C               | 0.6120 | 0.74 | 0.76 |
-| — bridge-neck cut removed    | 0.5520 | 0.74 | 0.66 |
-| — Model B → second Model A   | 0.5430 | 0.73 | 0.68 |
-| — temperature scaling removed| 0.5890 | 0.74 | 0.73 |
+| − bridge-neck cut removed    | 0.5520 | 0.74 | 0.66 |
+| − Model B → second Model A   | 0.5430 | 0.73 | 0.68 |
+| − temperature scaling removed| 0.5890 | 0.74 | 0.73 |
 
 Scores are proxy composite scores on a local held-out validation split, not
 official leaderboard scores (TopoScore T is set to 0.0 in the proxy metric
@@ -151,7 +151,7 @@ boundary directly).
 
 ---
 
-## 5  Known Limitations
+## 5  Known limitations
 
 **TopoScore not reimplemented.** The T component of S requires Betti-number
 matching, which depends on persistent homology computation. This is not
@@ -182,7 +182,7 @@ specialists.
 
 ---
 
-## 6  What Would Be Required to Publish
+## 6  What would be required to publish
 
 This work does not constitute a publishable contribution in its current form.
 The following would be needed:
@@ -191,8 +191,8 @@ The following would be needed:
    which is an application of existing techniques to a new domain.
 2. **Rigorous ablation** on a held-out test split, ideally with statistical
    significance testing (Wilcoxon signed-rank across multiple seeds).
-3. **Comparison to baselines** — nnU-Net, MONAI's existing 3D U-Net, and the
-   top public leaderboard submissions — with the same evaluation protocol.
+3. **Comparison to baselines** (nnU-Net, MONAI's existing 3D U-Net, and the
+   top public leaderboard submissions) with the same evaluation protocol.
 4. **True TopoScore integration** via a differentiable Betti-matching
    implementation or a verified correlation between the proxy VOI score and
    the competition TopoScore.

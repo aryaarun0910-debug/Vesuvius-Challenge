@@ -61,9 +61,9 @@ Three models trained with different seeds, folds, and loss emphasis:
 
 | Model | Role | Training emphasis |
 |---|---|---|
-| A — Generalist | Stable baseline | Conservative loss mix, best calibration |
-| B — Anti-merge | Bridge suppression | Strong gap-negative, neck-risk sampling |
-| C — Surface specialist | Boundary precision | SDF head, boundary classification head |
+| A: Generalist | Stable baseline | Conservative loss mix, best calibration |
+| B: Anti-merge | Bridge suppression | Strong gap-negative, neck-risk sampling |
+| C: Surface specialist | Boundary precision | SDF head, boundary classification head |
 
 Inference fuses logits by weighted mean, applies temperature scaling (T=0.85),
 hysteresis thresholding (t_low=0.35, t_high=0.65), and topology-safe
@@ -79,13 +79,13 @@ model count as the per-volume time budget is consumed (hard cap: 240 s/volume).
 
 | Model | Best proxy score | SurfaceDice | VOI score | TopoScore | Epochs | Time |
 |---|---|---|---|---|---|---|
-| A — Generalist | 0.5816 | 0.4842 | 0.9205 | 0.3000 | 34 | 8.77 h |
-| B — Anti-merge | 0.5110 | — | — | — | 35 | 8.83 h |
-| C — Surface | 0.4902 | — | — | — | 39 | 8.67 h |
+| A: Generalist | 0.5816 | 0.4842 | 0.9205 | 0.3000 | 34 | 8.77 h |
+| B: Anti-merge | 0.5110 | — | — | — | 35 | 8.83 h |
+| C: Surface | 0.4902 | — | — | — | 39 | 8.67 h |
 
 Best validation epoch for Model A: epoch 23. SWA applied from epoch 29.
 
-## Known Limitations
+## Known limitations
 
 - Proxy metrics are computed on held-out validation volumes but may not match
   Kaggle evaluation conventions exactly (ignore-mask handling, spacing units).

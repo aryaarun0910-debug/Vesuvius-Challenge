@@ -18,7 +18,7 @@ flowchart LR
     H --> I["Submission mask"]
 ```
 
-## Design Principle
+## Design principle
 
 The pipeline treats topology errors as first-class failures. A small bridge or split can matter more than a small average Dice improvement, so the system combines:
 
@@ -27,7 +27,7 @@ The pipeline treats topology errors as first-class failures. A small bridge or s
 - thresholding designed to preserve confident connected regions
 - runtime degradation levels for Kaggle notebook constraints
 
-## Repository Implementation
+## Repository implementation
 
 The heavy training and inference logic lives in Kaggle notebooks. The lightweight `src/vesuvius/` package extracts small, testable pieces:
 

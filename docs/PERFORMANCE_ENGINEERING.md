@@ -8,7 +8,7 @@ The project has meaningful systems constraints:
 - TTA improves robustness but multiplies inference cost
 - model ensembles improve stability but increase latency
 
-## Key Tradeoffs
+## Key tradeoffs
 
 | Lever | Benefit | Cost |
 |---|---|---|
@@ -18,7 +18,7 @@ The project has meaningful systems constraints:
 | TTA | Better invariance | Multiplicative runtime cost |
 | Postprocessing | Fewer structural artifacts | Extra CPU/GPU work |
 
-## Production Notebook Strategy
+## Production notebook strategy
 
 The inference notebook uses a time-budget ladder. Instead of a single brittle configuration, it can reduce compute progressively:
 
